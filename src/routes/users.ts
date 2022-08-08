@@ -81,14 +81,21 @@ const update = async (req: Request, res: Response) => {
 }
 
 const destroy = async (req: Request, res: Response) => {
-    const deleted = await store.delete(req.params.id)
+    const deleteId = req.params.id
+    const authorizationHeader = req.headers.authorization
+    const token: string = authorizationHeader ? authorizationHeader.split(' ')[1] : '';
+    const { user } = jwt.verify(token, secret) as JwtPayload
     try {
-        res.json({
-            msg: `User ${req.params.id} deleted`
-        })
-    } catch (err) {
-        res.json({
-            error: err
+        if (user.user.id == deleteId) {
+            await store.delete(deleteId)
+            res.json({ msg: 'User deleted Successfully' })
+        } else {
+            throw new Error('user id dose not match')
+        }
+    } catch (error: any) {
+        res.status(400).json({
+            error: error.toString(),
+            user: user.user.id
         })
     }
 }
@@ -138,11 +145,26 @@ const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
         res.status(401).json('unauthorized')
     }
 }
+const VerifyUserIsMe = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token: string = authorizationHeader ? authorizationHeader.split(' ')[1] : '';
+        const { user } = jwt.verify(token, secret) as JwtPayload
+        if (user.user.id == req.params.id) {
+            const decoded = jwt.verify(token, secret)
+            next()
+        } else {
+            res.status(401).json({msg: 'user id dose not match'})
+        }
+    } catch (error) {
+        res.status(401).json('unauthorized')
+    }
+}
 
 const users_routes = (app: express.Application) => {
     // users routes resources
     app.get('/users', index)
-    app.get('/users/:id', show)
+    app.get('/users/:id', VerifyUserIsMe, show)
     app.post('/users', verifyAuthToken, create)
     app.put('/users/:id', verifyAuthToken, update)
     app.delete('/users/:id', verifyAuthToken, destroy)
