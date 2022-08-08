@@ -166,8 +166,8 @@ const users_routes = (app: express.Application) => {
     app.get('/users', index)
     app.get('/users/:id', VerifyUserIsMe, show)
     app.post('/users', verifyAuthToken, create)
-    app.put('/users/:id', verifyAuthToken, update)
-    app.delete('/users/:id', verifyAuthToken, destroy)
+    app.put('/users/:id', VerifyUserIsMe, update)
+    app.delete('/users/:id', VerifyUserIsMe, destroy)
     // users auth routes
     app.post('/login', auth)
     app.post('/auth', verifyAuthToken, authToken)
