@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import * as dotenv from 'dotenv'
-import mythical_weapons_routes from "./routes/weapons";
-import users_routes from "./routes/users";
+
+import routes from './routes'
 
 dotenv.config()
 
@@ -20,9 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 
-// weapons routing
-mythical_weapons_routes(app)
-users_routes(app)
+// router
+routes(app)
 
 app.listen(PORT, () =>
   console.log(`Listening on port http://localhost:${PORT}!`)

@@ -5,12 +5,6 @@ const store = new UsersStore();
 
 const secret = process.env.TOKEN_SECRET || 'secret'
 
-interface verify {
-    user: object;
-    iat: number,
-    exp: number
-}
-
 const index = async (_req: express.Request, res: express.Response) => {
     const users  = await store.index();
     try {
