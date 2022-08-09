@@ -5,6 +5,7 @@ import weapons_routes from "../controllers/weapons";
 import products_routes from "../controllers/products";
 import users_routes from "../controllers/users";
 import orders_routes from "../controllers/orders";
+import dashboardRoutes from "../controllers/dashboard";
 
 const routes = (app: express.Application): void => {
     mythical_weapons_routes(app);
@@ -12,6 +13,7 @@ const routes = (app: express.Application): void => {
     products_routes(app);
     users_routes(app);
     orders_routes(app);
+    dashboardRoutes(app);
 }
 
 export default routes;
