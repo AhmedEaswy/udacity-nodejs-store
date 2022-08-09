@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { Order, OrdersStore } from '../models/order'
+import { Order, NewOrderProduct, OrdersStore } from '../models/order'
 
 const store = new OrdersStore();
 
@@ -39,10 +39,9 @@ const create = async (_req: Request, res: Response) => {
         res.status(200).json({
             msg: `order created successfully on id: ${newOrder.id}`
         })
-    } catch (error) {
-        console.log(error)
+    } catch (error: any) {
         res.status(400).json({
-            error: error
+            error: error.toString()
         })
     }
 }
@@ -60,6 +59,25 @@ const update = async (_req: Request, res: Response) => {
         })
     } catch (err) {
         console.log(err)
+    }
+}
+
+const addProduct = async (_req: Request, res: Response) => {
+    const newOrderProduct: NewOrderProduct = {
+        order_id: _req.params.id,
+        product_id: _req.body.product_id,
+        quantity: _req.body.quantity
+    }
+    console.log(newOrderProduct)
+    try {
+        const added = await store.addProduct(newOrderProduct)
+        res.json({
+            msg: `Product added to Order successfully on id: ${added.id}`
+        })
+    } catch (error: any) {
+        res.json({
+            error: error.toString()
+        })
     }
 }
 
@@ -83,6 +101,9 @@ const orders_routes = (app: express.Application) => {
     app.post('/orders', create)
     app.put('/orders/:id', update)
     app.delete('/orders/:id', destroy)
+    // add product
+    app.post('/orders/:id/products', addProduct)
+
 }
 
 export default orders_routes;
